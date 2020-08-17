@@ -1,8 +1,9 @@
 import React, { useState, useEffect, forwardRef  } from 'react';
 import logo from './alternativa-2.jpg';
 import './config/app.css';
-import { TextField, Box } from '@material-ui/core';
-import useStyles from './config/styles';
+
+import Box from '@material-ui/core/Box';
+import { useStyles } from './config/styles';
 import Button from '@material-ui/core/Button';
 import SearchIcon from '@material-ui/icons/Search';
 import axios from 'axios';
@@ -25,6 +26,8 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import account_circle from '@material-ui/icons/AccountCircleOutlined';
+
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator'
 
 
 const tableIcons = {
@@ -113,12 +116,6 @@ function get2(insc) {
     get(input);
   }
 
-  // como fazer com que o detail table apresente o histórico de bloqueios!!
-  function handleSubmit2(info) {
-    console.log('ALO!!!@@@')
-    get2(info);
-  }
-
   var input = {
     cnpj,
     insc
@@ -133,11 +130,15 @@ function get2(insc) {
         <h1>Cadastro Legado</h1>
         <h3>Somente Consulta</h3>
         <div style={{ width: '100%' }}>
-          <form component="div" className={classes.alignItemsAndJustifyContent} onSubmit={handleSubmit}>
-            <TextField id="cnpj" label="CNPJ" variant="outlined" className={classes.textField1} value={cnpj} onInput={ e => setCnpj(e.target.value)} />
-            <TextField id="insc" label="Inscrição" variant="outlined" className={classes.textField2} value={insc} onInput={ f => setInsc(f.target.value)}/>
+          <ValidatorForm useRef={"form"} className={classes.alignItemsAndJustifyContent} onSubmit={handleSubmit}>
+            <TextValidator id="cnpj" label="CNPJ" variant="outlined"
+             className={classes.tF1} value={cnpj} type="text"
+             validators={['isNumber' ]}
+             errorMessages={['Somente números!', 'CNPJ contém 14 números!']}
+             onInput={ e => setCnpj(e.target.value)} />
+            <TextValidator id="insc" label="Inscrição" variant="outlined" className={classes.tF2} value={insc} onInput={ f => setInsc(f.target.value)}/>
             <Button id="search" variant="contained" className={classes.button} type="submit" startIcon={<SearchIcon />}>Buscar</Button>
-          </form>
+          </ValidatorForm>
           <Box component="div" className={classes.tabela}>
             <MaterialTable 
             title="Dados da Empresa"
@@ -164,13 +165,10 @@ function get2(insc) {
                 
                 //FUNCIONAAAAAAAAAAAAAAAAAAAA
                 data = { data => new Promise((resolve, reject) => {
-                  console.log(rowData)
                  let url = `http://10.75.9.84:3000/api/historico?emp_insc=${rowData.insc}`
-                 console.log(url);
                  fetch(url)
                     .then(response =>  response.json())
                     .then(result => {
-                      
                       resolve({
                         data: result
                      });
@@ -188,10 +186,9 @@ function get2(insc) {
                 }}
                   
                 />
-                //<div onLoad={ e =>  }>{rowData.cnpj}</div>
               )
             }}
-            //onRowClick={(event, rowData, togglePanel) => togglePanel() }
+            onRowClick={(event, rowData, togglePanel) => togglePanel() }
             />
           </Box>
         </div>
