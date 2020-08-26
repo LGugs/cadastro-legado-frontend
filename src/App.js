@@ -1,111 +1,21 @@
-import React, { useState, useEffect, forwardRef  } from 'react';
-import logo from './alternativa-2.jpg';
-import './config/app.css';
-
+import React, { useState } from 'react';
+import logo from './styles/alternativa-2.jpg';
+import './styles/app.css';
+import { columns, columns2, tableIcons } from './utils/table';
 import Box from '@material-ui/core/Box';
-import { useStyles } from './config/styles';
+import useStyles from './styles/styles';
 import Button from '@material-ui/core/Button';
-import SearchIcon from '@material-ui/icons/Search';
-import axios from 'axios';
 import MaterialTable from "material-table";
-import AddBox from '@material-ui/icons/AddBox';
-//import api from './api';
-
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
-import Edit from '@material-ui/icons/Edit';
-import FilterList from '@material-ui/icons/FilterList';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
+import { get, getDetail } from './utils/api';
 import Search from '@material-ui/icons/Search';
-import ViewColumn from '@material-ui/icons/ViewColumn';
-import account_circle from '@material-ui/icons/AccountCircleOutlined';
-
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator'
-
-
-const tableIcons = {
-  Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-  Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-  Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-  Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-  DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-  Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-  Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-  Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-  FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-  LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-  NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-  PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-  ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-  Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-  SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-  ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
-  account_circle: forwardRef((props, ref) => <account_circle {...props} ref={ref} />)
-};
-
-const api = axios.create({
-  baseURL: `http://10.75.9.84:3000/api`
-})
 
 function App() {
   const classes = useStyles();
-
-  // colunas
-  var columns2 = [
-    {title: "Tipo de Bloqueio", field: "sit"},
-    {title: "Data Inicial", field: "dt_inicial"},
-    {title: "Motivo", field: "MOTIVO_INI"},
-    {title: "Data Final", field: "dt_fim"},
-    {title: "Motivo Final", field: "MOTIVO_FIM"}
-  ]
-
-  var columns = [
-    {title: "Razão Social", field: "razao_social"},
-    {title: "CNPJ", field: "cnpj"},
-    {title: "Inscrição SUFRAMA", field: "insc"},
-    {title: "Tipo da Inscrição", field: "tipo"},
-    {title: "Situação", field: "sit"}
-  ]
-
-  // dados da tabela após consulta
-  const [data, setData] = useState([]);
-  const [data2, setData2] = useState([]);
-
-  // para gerenciar possíveis erros
-  const [iserror, setIserror] = useState(false)
-  const [errorMessages, setErrorMessages] = useState([])
-
-  function get(dados) {
-    api.get(`/empresas/${dados.cnpj}?emp_insc=${dados.insc}`)
-    .then(res => {
-     setData(res.data)
-    })
-    .catch (error => {
-     setErrorMessages(["Não foi possível carregar dados!"]);
-     setIserror(true)
-    }) 
-}
-
-function get2(insc) {
-  //console.log('alo' + data2[0].SIT)
-  api.get(`/historico?emp_insc=${insc}`)
-  .then(res => {
-   setData2(res.data2)
-  })
-  .catch (error => {
-   setErrorMessages(["Não foi possível carregar dados!"]);
-   setIserror(true)
-  })
-}
   
+  const [show, setShow] = useState(false); // define que a tabela seja escondida por padrão
+
+  const [data, setData] = useState([]);
 
   // pegando valores para consulta
   var [cnpj, setCnpj] = useState('');
@@ -113,14 +23,18 @@ function get2(insc) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    get(input);
+    get(input).then(res => {
+      setData(res.data)
+    })
+    .catch (error => {
+      console.log(error)
+    })  
   }
 
   var input = {
     cnpj,
     insc
   }
-
 
  return (
     <div className="App">
@@ -130,15 +44,26 @@ function get2(insc) {
         <h1>Cadastro Legado</h1>
         <h3>Somente Consulta</h3>
         <div style={{ width: '100%' }}>
-          <ValidatorForm useRef={"form"} className={classes.alignItemsAndJustifyContent} onSubmit={handleSubmit}>
+          <ValidatorForm useref={"form"} className={classes.alignItemsAndJustifyContent} onSubmit={handleSubmit}>
             <TextValidator id="cnpj" label="CNPJ" variant="outlined"
              className={classes.tF1} value={cnpj} type="text"
-             validators={['isNumber' ]}
-             errorMessages={['Somente números!', 'CNPJ contém 14 números!']}
-             onInput={ e => setCnpj(e.target.value)} />
-            <TextValidator id="insc" label="Inscrição" variant="outlined" className={classes.tF2} value={insc} onInput={ f => setInsc(f.target.value)}/>
-            <Button id="search" variant="contained" className={classes.button} type="submit" startIcon={<SearchIcon />}>Buscar</Button>
+             validators={['isNumber', 'matchRegexp:^[0-9]{14}$' ]}
+             errorMessages={['Somente números!', 'CNPJ contém 14 dígitos!']}
+             onInput={ e => setCnpj(e.target.value)}
+             inputProps={
+               {maxLength: 14}
+             } />
+            <TextValidator id="insc" label="Inscrição" variant="outlined" 
+             className={classes.tF2} value={insc} 
+             onInput={ f => setInsc(f.target.value) } 
+             validators={['isNumber', 'matchRegexp:^[0-9]{9}$' ]}
+             errorMessages={['Somente números!', 'Inscrição contém 9 dígitos!']}
+             inputProps={
+               {maxLength: 9}
+             } />
+            <Button id="search" variant="contained" className={classes.button} type="submit" onClick={() => setShow(true)} startIcon={<Search />}>Buscar</Button>
           </ValidatorForm>
+          {show ?
           <Box component="div" className={classes.tabela}>
             <MaterialTable 
             title="Dados da Empresa"
@@ -163,10 +88,8 @@ function get2(insc) {
 
                 icons={tableIcons}
                 
-                //FUNCIONAAAAAAAAAAAAAAAAAAAA
-                data = { data => new Promise((resolve, reject) => {
-                 let url = `http://10.75.9.84:3000/api/historico?emp_insc=${rowData.insc}`
-                 fetch(url)
+                data = { data => new Promise((resolve) => {
+                 getDetail(rowData.insc)
                     .then(response =>  response.json())
                     .then(result => {
                       resolve({
@@ -191,6 +114,7 @@ function get2(insc) {
             onRowClick={(event, rowData, togglePanel) => togglePanel() }
             />
           </Box>
+          : null}
         </div>
     </div>
   );
