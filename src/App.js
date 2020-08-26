@@ -27,6 +27,7 @@ function App() {
       setData(res.data)
     })
     .catch (error => {
+      setData([]) // esvaziar a tabela
       console.log(error)
     })  
   }
@@ -76,7 +77,9 @@ function App() {
               },
             }}
             options={{
-              search: false, sorting: false, paging: false
+              search: false, sorting: false, paging: false, headerStyle: { 
+                    backgroundColor: 'lightgray', color: 'black'
+                  }
             }}
             detailPanel={(rowData) => {
               return (
@@ -88,7 +91,7 @@ function App() {
 
                 icons={tableIcons}
                 
-                data = { data => new Promise((resolve) => {
+                data = { query => new Promise((resolve) => {
                  getDetail(rowData.insc)
                     .then(response =>  response.json())
                     .then(result => {
@@ -99,7 +102,9 @@ function App() {
                 }) }
                 
                 options={{
-                  search: false, sorting: false, paging: false
+                  search: false, paging: false, sorting: false, headerStyle: { 
+                    backgroundColor: 'lightgray', color: 'black'
+                  }
                 }}
                 
                 localization={{
