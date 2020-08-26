@@ -16,5 +16,5 @@ export function get(dados) {
 }
 
 export function getDetail(dados) {
-    return fetch(`${process.env.REACT_APP_API_URL}/historico?emp_insc=${dados.insc}`)
+    return fetch(`${process.env.REACT_APP_API_URL}/historico?emp_insc=${dados}`)
 }
