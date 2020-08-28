@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import logo from './styles/alternativa-2.jpg';
 import './styles/app.css';
-import { columns, columns2, tableIcons } from './utils/table';
+import { columns, detalhes, tableIcons } from './utils/table';
 import Box from '@material-ui/core/Box';
 import useStyles from './styles/styles';
 import Button from '@material-ui/core/Button';
@@ -87,7 +87,7 @@ function App() {
                 
                 title="Historico de Bloqueios"
                 
-                columns={columns2}
+                columns={detalhes}
 
                 icons={tableIcons}
                 
@@ -116,7 +116,7 @@ function App() {
                 />
               )
             }}
-            onRowClick={(event, rowData, togglePanel) => togglePanel() }
+            //onRowClick={(event, rowData, togglePanel) => togglePanel() }
             />
           </Box>
           : null}

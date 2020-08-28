@@ -16,7 +16,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import AddBox from '@material-ui/icons/AddBox';
 
 // tipo de valores das colunas da tabela
-export const columns2 = [
+export const detalhes = [
     {title: "Tipo de Bloqueio", field: "sit"},
     {title: "Data Inicial", field: "dt_inicial"},
     {title: "Motivo", field: "MOTIVO_INI"},
@@ -29,7 +29,8 @@ export const columns = [
     {title: "CNPJ", field: "cnpj"},
     {title: "Inscrição SUFRAMA", field: "insc"},
     {title: "Tipo da Inscrição", field: "tipo"},
-    {title: "Situação", field: "sit"}
+    {title: "Situação", field: "sit"},
+    {title: "Setor", field: "subsetor"}
 ]
 
 export const tableIcons = {
